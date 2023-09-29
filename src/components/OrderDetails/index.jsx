@@ -9,6 +9,9 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../../redux/features/ui/uiSlice";
+import { CircularProgress } from "@mui/material";
+import { getOneOrder } from "../../redux/features/orders/getOneOrder";
+import { formatAmount } from "../../helpers/formatAmount";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#F9F9F9",
@@ -33,18 +36,23 @@ const style = {
 export default function OrderDetails() {
   const dispatch = useDispatch();
   const ui = useSelector((state) => state?.ui) || {};
-  const selectedTransaction = {};
-
+  const selectedOrderID =
+    useSelector((state) => state?.orders?.selectedOrderID) || null;
+  const order = useSelector((state) => state?.orders?.order) || null;
+  const loading = useSelector((state) => state?.orders?.loading) || false;
+  console.log(selectedOrderID);
   const handleClose = () => {
     dispatch(closeModal());
   };
 
-  const orderDetails = selectedTransaction?.orderDetails;
-  const formatAmount = (amount) => {
-    return new Intl.NumberFormat("en-US").format(amount);
-  };
+  React.useEffect(() => {
+    if (selectedOrderID) {
+      dispatch(getOneOrder(selectedOrderID));
+    }
+  }, [selectedOrderID]);
+
   return (
-    <div>
+    <Box sx={{ display: "flex" }}>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -68,39 +76,49 @@ export default function OrderDetails() {
             >
               Order Details
             </Typography>
-            <Box sx={{ width: "100%" }}>
-              <Stack spacing={2}>
-                <Box>
-                  <Box
-                    sx={{
-                      fontSize: "1.2em",
-                      fontWeight: "700",
-                      mt: 2,
-                      textAlign: "center",
-                    }}
-                  >
-                    ₦{formatAmount(orderDetails?.totalAmount)}
+            {!order || loading ? (
+              <Box
+                marginTop={2}
+                sx={{ display: "flex" }}
+                justifyContent="center"
+              >
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Box sx={{ width: "100%" }}>
+                <Stack spacing={2}>
+                  <Box>
+                    <Box
+                      sx={{
+                        fontSize: "1.2em",
+                        fontWeight: "700",
+                        mt: 2,
+                        textAlign: "center",
+                      }}
+                    >
+                      ₦ {formatAmount(order?.totalAmount)}
+                    </Box>
                   </Box>
-                </Box>
-                <Item>
-                  <Typography>Total Orders</Typography>
-                  <Typography>{orderDetails?.totalOrders}</Typography>
-                </Item>
-                <Item>
-                  <Typography>Today's Total Amount</Typography>
-                  <Typography>
-                    ₦{formatAmount(orderDetails?.todayTotalAmount)}
-                  </Typography>
-                </Item>
-                <Item>
-                  <Typography>Today's Total Orders</Typography>
-                  <Typography>{orderDetails?.todayTotalOrders}</Typography>
-                </Item>
-              </Stack>
-            </Box>
+                  <Item>
+                    <Typography>Total Orders</Typography>
+                    <Typography>{order?.totalOrders}</Typography>
+                  </Item>
+                  <Item>
+                    <Typography>Today's Total Amount</Typography>
+                    <Typography>
+                      ₦ {formatAmount(order?.todayTotalAmount)}
+                    </Typography>
+                  </Item>
+                  <Item>
+                    <Typography>Today's Total Orders</Typography>
+                    <Typography>{order?.todayTotalOrders}</Typography>
+                  </Item>
+                </Stack>
+              </Box>
+            )}
           </Box>
         </Fade>
       </Modal>
-    </div>
+    </Box>
   );
 }

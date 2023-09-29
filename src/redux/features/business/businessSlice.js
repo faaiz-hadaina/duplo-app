@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getBusinesses } from "./getBusinesses";
 
-export const counterSlice = createSlice({
+export const businessSlice = createSlice({
   name: "business",
   initialState: { loading: false, error: false, businesses: [] },
   reducers: {},
@@ -23,6 +23,4 @@ export const counterSlice = createSlice({
   },
 });
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
-
-export default counterSlice.reducer;
+export default businessSlice.reducer;

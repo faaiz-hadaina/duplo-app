@@ -1,42 +1,27 @@
 import * as React from "react";
 import { DataGrid as MuiDataGrid } from "@mui/x-data-grid";
 import { useDispatch, useSelector } from "react-redux";
-import { getBusinesses } from "../../redux/features/business/getBusinesses";
 import { showModal } from "../../redux/features/ui/uiSlice";
+import { getAllOrders } from "../../redux/features/orders/getAllOrders";
+import { selectOrderID } from "../../redux/features/orders/ordersSlice";
+import { formatAmount } from "../../helpers/formatAmount";
 
 export default function DataGrid() {
-  const [selected, setSelected] = React.useState([]);
-  const businesses = useSelector((state) => state.business.businesses) || [];
-  const loading = useSelector((state) => state.business.loading) || false;
+  const orders = useSelector((state) => state.orders?.orders) || [];
+  const loading = useSelector((state) => state.orders?.loading) || false;
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    dispatch(getBusinesses());
+    dispatch(getAllOrders());
   }, []);
 
   function getRowId(row) {
     return row._id;
   }
 
-  const handleRowClick = (name) => {
+  const handleRowClick = (item) => {
+    dispatch(selectOrderID(item?.row?.businessID));
     dispatch(showModal());
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
   };
 
   const columns = [
@@ -60,6 +45,7 @@ export default function DataGrid() {
       disablePadding: false,
       headerName: "Amount (₦)",
       width: 150,
+      valueGetter: (params) => `${formatAmount(params.row.totalAmount)}`,
     },
     {
       field: "action",
@@ -73,7 +59,7 @@ export default function DataGrid() {
       onRowClick={handleRowClick}
       loading={loading}
       getRowId={getRowId}
-      rows={businesses}
+      rows={orders}
       columns={columns}
     />
   );

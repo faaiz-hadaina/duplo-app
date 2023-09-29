@@ -1,15 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { API_GET_BUSINESSES } from "../../../config/api";
+import { API_GET_ONE_ORDER } from "../../../config/api";
 import { toast } from "react-toastify";
 import { Client } from "../../../helpers/client";
 
-export const getBusinesses = createAsyncThunk(
-  "business/getAll",
-  async (data, { rejectWithValue, dispatch }) => {
+export const getOneOrder = createAsyncThunk(
+  "orders/getOne",
+  async (id, { rejectWithValue, dispatch }) => {
     try {
       const response = await Client({
         method: "GET",
-        path: API_GET_BUSINESSES,
+        path: API_GET_ONE_ORDER.replace("{:id}", id),
       });
 
       return response.data;
