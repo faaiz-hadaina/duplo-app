@@ -11,6 +11,10 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
+Preview URL: https://duplo-orders.netlify.app/
+
+Pushing changes to the repo will automatically update the above URL
+
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
